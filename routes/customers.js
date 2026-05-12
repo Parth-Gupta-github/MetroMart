@@ -12,10 +12,13 @@ router.get('/', async (req, res) => {
 
     if (error) throw error;
 
-    res.render('customers', { customers });
+    res.render('customers', { customers: customers || [], dbError: null });
   } catch (err) {
     console.error('Error fetching customers:', err);
-    res.status(500).send('Error fetching customers');
+    res.status(200).render('customers', {
+      customers: [],
+      dbError: 'Customer data could not be loaded right now. You can still use this page while the database connection is fixed.'
+    });
   }
 });
 

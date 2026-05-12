@@ -6,9 +6,11 @@ dotenv.config();
 
 // --- Supabase client (named export)
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
 
 let supabase = null;
+const supabaseKeyType = supabaseKey === process.env.SUPABASE_SERVICE_ROLE_KEY ? 'service_role' : supabaseKey === process.env.SUPABASE_ANON_KEY ? 'anon' : 'none';
+console.log('Supabase client key type:', supabaseKeyType);
 if (supabaseUrl && supabaseKey) {
   supabase = createClient(supabaseUrl, supabaseKey);
 } else {

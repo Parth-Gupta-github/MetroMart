@@ -1,3 +1,17 @@
+TRUNCATE TABLE
+returns,
+sales_details,
+sales_invoices,
+customers,
+product_supplier,
+supply_order_details,
+supply_orders,
+suppliers,
+products,
+department,
+employees
+RESTART IDENTITY CASCADE;
+
 INSERT INTO employees
 (emp_name, email, mobile, salary, hire_date, is_active)
 VALUES

@@ -117,7 +117,7 @@ create table returns (
     return_reason text not null,
     return_date date not null default current_date,
     refund_amount decimal(10,2) not null check (refund_amount > 0),
-    process_emp_id int not null,
+    process_emp_id int,
 
     foreign key (invoice_num) references sales_invoices(invoice_num) on delete restrict,
     foreign key (product_code) references products(product_code) on delete restrict,
@@ -234,3 +234,30 @@ create trigger trg_reduce_loyalty_points_on_return
 after insert on returns
 for each row
 execute function reduce_loyalty_points_on_return();
+
+create or replace function update_loyalty_points_earned()
+returns trigger as $$
+begin
+    update sales_invoices
+    set loyalty_points_earned = round(new.final_amount * 0.05)
+    where invoice_num = new.invoice_num;
+    return new;
+end;
+$$ language plpgsql;
+create trigger trg_update_loyalty_points_earned
+after insert on sales_invoices
+for each row
+execute function update_loyalty_points_earned();
+
+-- Disable RLS on all tables for service role access
+ALTER TABLE employees DISABLE ROW LEVEL SECURITY;
+ALTER TABLE department DISABLE ROW LEVEL SECURITY;
+ALTER TABLE products DISABLE ROW LEVEL SECURITY;
+ALTER TABLE suppliers DISABLE ROW LEVEL SECURITY;
+ALTER TABLE supply_orders DISABLE ROW LEVEL SECURITY;
+ALTER TABLE supply_order_details DISABLE ROW LEVEL SECURITY;
+ALTER TABLE product_supplier DISABLE ROW LEVEL SECURITY;
+ALTER TABLE customers DISABLE ROW LEVEL SECURITY;
+ALTER TABLE sales_invoices DISABLE ROW LEVEL SECURITY;
+ALTER TABLE sales_details DISABLE ROW LEVEL SECURITY;
+ALTER TABLE returns DISABLE ROW LEVEL SECURITY;

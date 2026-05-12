@@ -36,7 +36,13 @@ router.get("/", async (req, res) => {
       return { ...d, supervisor_name: sup ? sup.emp_name : null };
     });
 
-    return res.render('departments', { departments: enriched, employees: employeesData, search, sort });
+    return res.render('departments', {
+      departments: enriched,
+      employees: employeesData || [],
+      search,
+      sort,
+      dbError: null
+    });
   } catch (supErr) {
     console.warn('Supabase read failed for departments, falling back to PG SQL:', supErr.message || supErr);
     // fallback to PG like before
@@ -63,14 +69,21 @@ router.get("/", async (req, res) => {
       ]);
 
       return res.render("departments", {
-        departments: departmentsResult.rows,
-        employees: employeesResult.rows,
+        departments: departmentsResult.rows || [],
+        employees: employeesResult.rows || [],
         search,
-        sort
+        sort,
+        dbError: null
       });
     } catch (err) {
       console.error('Fallback PG query failed for departments route:', err);
-      return res.status(500).send('Error fetching departments');
+      return res.status(200).render("departments", {
+        departments: [],
+        employees: [],
+        search,
+        sort,
+        dbError: 'Department data could not be loaded right now. You can still use this page while the database connection is fixed.'
+      });
     }
   }
 });

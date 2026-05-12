@@ -48,11 +48,12 @@ router.get('/', async (req, res) => {
     const employeesResult = await pool.query(employeesQuery, queryParams);
 
     res.render('employees', {
-      employees: employeesResult.rows,
-      departments: departmentsResult.rows,
+      employees: employeesResult.rows || [],
+      departments: departmentsResult.rows || [],
       search,
       department,
-      sort
+      sort,
+      dbError: null
     });
   } catch (err) {
     console.warn('PG query failed, falling back to Supabase client:', err.message || err);
@@ -108,14 +109,22 @@ router.get('/', async (req, res) => {
 
       res.render('employees', {
         employees: filtered,
-        departments: departmentsData,
+        departments: departmentsData || [],
         search,
         department,
-        sort
+        sort,
+        dbError: null
       });
     } catch (supErr) {
       console.error('Supabase fallback failed for employees route:', supErr);
-      res.status(500).send('Error fetching employees');
+      res.status(200).render('employees', {
+        employees: [],
+        departments: [],
+        search,
+        department,
+        sort,
+        dbError: 'Employee data could not be loaded right now. You can still use this page while the database connection is fixed.'
+      });
     }
   }
 });

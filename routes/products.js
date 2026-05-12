@@ -55,17 +55,24 @@ router.get("/", async (req, res) => {
     if (deptError) throw deptError;
 
     res.render("products", {
-      products: products.map((p) => ({
+      products: (products || []).map((p) => ({
         ...p,
         department_name: p.department?.dep_name || "Unknown",
       })),
-      departments,
+      departments: departments || [],
       search,
       sort,
+      dbError: null,
     });
   } catch (err) {
     console.error("Error fetching products:", err);
-    res.status(500).send("Error fetching products");
+    res.status(200).render("products", {
+      products: [],
+      departments: [],
+      search: req.query.search || "",
+      sort: req.query.sort || "",
+      dbError: "Product data could not be loaded right now. You can still use this page while the database connection is fixed.",
+    });
   }
 });
 

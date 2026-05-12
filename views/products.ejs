@@ -12,6 +12,12 @@
     <h1 class="page-title">🛒 Product Management</h1>
 
     <!-- Add Product Form -->
+    <% if (typeof dbError !== 'undefined' && dbError) { %>
+      <div style="margin-bottom: 15px; padding: 12px 14px; border-radius: 8px; background: #fff3cd; color: #664d03; border: 1px solid #ffecb5;">
+        <%= dbError %>
+      </div>
+    <% } %>
+
     <section class="form-section">
       <h2 class="section-title">➕ Add New Product</h2>
       <br>
@@ -95,6 +101,13 @@
           </tr>
         </thead>
         <tbody>
+          <% if (!products || products.length === 0) { %>
+            <tr>
+              <td colspan="9" style="text-align: center; color: #666; padding: 24px;">
+                No products to display.
+              </td>
+            </tr>
+          <% } else { %>
           <% products.forEach(p => { %>
             <tr>
               <td><%= p.product_code %></td>
@@ -111,6 +124,7 @@
               </td>
             </tr>
           <% }) %>
+          <% } %>
         </tbody>
       </table>
     </section>

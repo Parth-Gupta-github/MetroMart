@@ -111,6 +111,11 @@
 
   <div class="container">
     <h1>👥 Customers</h1>
+    <% if (typeof dbError !== 'undefined' && dbError) { %>
+      <div style="margin-bottom: 15px; padding: 12px 14px; border-radius: 8px; background: #fff3cd; color: #664d03; border: 1px solid #ffecb5;">
+        <%= dbError %>
+      </div>
+    <% } %>
     <div style="text-align: right; margin-bottom: 15px;">
       <a href="/customers/new" class="btn btn-primary">➕ Add New Customer</a>
     </div>
@@ -130,6 +135,13 @@
           </tr>
         </thead>
         <tbody>
+          <% if (!customers || customers.length === 0) { %>
+            <tr>
+              <td colspan="8" style="text-align: center; color: #666; padding: 24px;">
+                No customers to display.
+              </td>
+            </tr>
+          <% } else { %>
           <% customers.forEach(customer => { %>
             <tr>
               <td data-label="ID"><%= customer.customer_id %></td>
@@ -150,6 +162,7 @@
               </td>
             </tr>
           <% }) %>
+          <% } %>
         </tbody>
       </table>
     </div>

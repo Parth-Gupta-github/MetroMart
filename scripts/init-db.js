@@ -9,20 +9,31 @@ const __dirname = path.dirname(__filename);
 async function initDatabase() {
   try {
     console.log('Initializing database...');
+    console.log('Pool type:', typeof pool.query);
+
+    // Test connection
+    try {
+      const testResult = await pool.query('SELECT 1 as test');
+      console.log('Connection test result:', testResult.rows);
+    } catch (connError) {
+      console.error('Connection test failed:', connError.message);
+    }
 
     // Read schema.sql
     const schemaPath = path.join(__dirname, '..', 'schema.sql');
     const schemaSQL = fs.readFileSync(schemaPath, 'utf8');
 
-    // Split by semicolon and execute each statement
-    const statements = schemaSQL.split(';').filter(stmt => stmt.trim().length > 0);
+    console.log('Executing schema file...');
+    await pool.query(schemaSQL);
 
-    for (const statement of statements) {
-      if (statement.trim()) {
-        console.log('Executing:', statement.trim().substring(0, 50) + '...');
-        await pool.query(statement);
-      }
-    }
+    // Grant permissions to service role
+    console.log('Granting permissions...');
+    await pool.query(`
+      GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO postgres;
+      GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO postgres;
+      ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO postgres;
+      ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO postgres;
+    `);
 
     console.log('✅ Database initialized successfully!');
 

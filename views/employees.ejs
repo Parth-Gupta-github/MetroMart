@@ -12,6 +12,12 @@
   <main class="container">
   <h1 class="page-title">👨‍💼 Employee Management</h1>
 
+  <% if (typeof dbError !== 'undefined' && dbError) { %>
+    <div style="margin-bottom: 15px; padding: 12px 14px; border-radius: 8px; background: #fff3cd; color: #664d03; border: 1px solid #ffecb5;">
+      <%= dbError %>
+    </div>
+  <% } %>
+
   <section class="form-section">
     <h2 class="section-title">➕ Add New Employee</h2>
     <br>
@@ -76,6 +82,13 @@
         </tr>
       </thead>
       <tbody>
+        <% if (!employees || employees.length === 0) { %>
+          <tr>
+            <td colspan="9" style="text-align: center; color: #666; padding: 24px;">
+              No employees to display.
+            </td>
+          </tr>
+        <% } else { %>
         <% employees.forEach(emp => { %>
           <tr>
             <td><%= emp.emp_id %></td>
@@ -99,6 +112,7 @@
             </td>
           </tr>
         <% }) %>
+        <% } %>
       </tbody>
         </table>
     </section>
