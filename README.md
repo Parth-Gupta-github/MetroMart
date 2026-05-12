@@ -4,6 +4,8 @@ MetroMart is a full-stack supermarket management system for handling products, c
 
 The project is built with Node.js, Express, EJS, and Supabase. It is designed to run locally during development and can be deployed on Vercel with Supabase as the hosted PostgreSQL database.
 
+Live demo: https://metro-mart-eta.vercel.app
+
 ## Features
 
 - Dashboard for supermarket activity and summary metrics
